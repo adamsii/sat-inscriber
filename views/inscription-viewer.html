@@ -1,0 +1,209 @@
+<html>
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BS39D1T9MN"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-BS39D1T9MN");
+    </script>
+    <title>Sat Inscriber</title>
+    <meta
+      name="description"
+      lang="en-US"
+      content="Participate in the newest NFT market on Bitcoin and inscribe your files with us today!"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png?v1"
+    />
+    <link rel="stylesheet" href="/css/stylesheet.css" />
+    <link rel="stylesheet" href="/css/modal.css" />
+  </head>
+  <style>
+    #preview {
+      width: 100%;
+      overflow: hidden;
+      background: black;
+      color: white;
+      margin-top: 50px;
+      box-sizing: border-box;
+      object-fit: cover;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .paragraph-preview {
+      overflow-wrap: anywhere;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      width: 80%;
+    }
+
+    .img-preview {
+      height: 80%;
+    }
+  </style>
+  <body class="body">
+    <nav class="nav">
+      <a href="/" class="logo">Sat Inscriber</a>
+      <span class="nav-links">
+        <a href="/inscription-viewer.html">Inscription viewer</a>
+        <a href="/my-inscriptions.html">My inscriptions</a>
+      </span>
+    </nav>
+    <div class="content">
+      <h1 style="margin: 0px">Inscription Viewer</h1>
+      <p style="margin: 0px">
+        Enter any inscription id to render its inscription below
+      </p>
+      <p style="font-size: 16px; color: rgba(0, 0, 0, 0.5); margin: 0px">
+        Supported file types: txt, png, jpeg
+      </p>
+      <input
+        id="inscription-id"
+        type="text"
+        placeholder="Enter the inscription id"
+        style="
+          width: 100%;
+          border-radius: 5px;
+          padding: 14px;
+          border: 1px solid gray;
+          outline: none;
+          font-size: 14px;
+          margin-top: 50px;
+        "
+      />
+
+      <div id="preview">
+        <!-- <p class="paragraph-preview">
+          previewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreviewpreview
+        </p> -->
+      </div>
+    </div>
+    <script type="text/javascript" src="/ord-utils.js"></script>
+    <script>
+      //https://stackoverflow.com/a/41797377/7407434
+      function hexToBase64(hexstring) {
+        return btoa(
+          hexstring
+            .match(/\w{2}/g)
+            .map(function (a) {
+              return String.fromCharCode(parseInt(a, 16));
+            })
+            .join("")
+        );
+      }
+
+      //https://stackoverflow.com/a/13865680/7407434
+      function hexToUTF8(hexx) {
+        var hex = hexx.toString(); //force conversion
+        return decodeURIComponent(
+          hex.replace(/\s+/g, "").replace(/[0-9a-f]{2}/g, "%$&")
+        );
+      }
+
+      function renderImagePreview(preview, contentType, hexData) {
+        let img = document.createElement("img");
+        img.src = `data:${contentType};base64,${hexToBase64(hexData)}`;
+        img.classList.add("img-preview");
+        preview.appendChild(img);
+      }
+
+      function renderTextPreview(preview, hexData) {
+        let p = document.createElement("p");
+        p.innerText = hexToUTF8(hexData);
+        p.classList.add("paragraph-preview");
+        preview.appendChild(p);
+      }
+
+      function renderErrorMessage(preview, textData) {
+        let p = document.createElement("p");
+        p.innerText = textData;
+        p.classList.add("paragraph-preview");
+        p.style.color = "tomato";
+        preview.appendChild(p);
+      }
+
+      async function showPreview(container, revealTxId) {
+        let response = await fetch(`/bitcoin-explorer-api/tx/${revealTxId}`);
+        let tx = await response.json();
+
+        let witness = tx.vin[0].witness[1];
+        let { contentType, hexData: data } = parseWitness(witness);
+
+        contentType = hexToUTF8(contentType);
+
+        if (contentType.startsWith("image")) {
+          renderImagePreview(preview, contentType, data);
+        } else if (contentType.startsWith("text")) {
+          renderTextPreview(preview, data);
+        } else {
+          renderErrorMessage(preview, "Unsupported content type");
+        }
+      }
+
+      let currentlyLoaded;
+      function loadPreview(inscriptionId) {
+        if (inscriptionId == currentlyLoaded) {
+          return;
+        }
+
+        let preview = document.getElementById("preview");
+        preview.innerHTML = "";
+
+        if (!inscriptionId) {
+          return;
+        }
+
+        let txid = inscriptionId.substring(0, inscriptionId.indexOf("i"));
+
+        if (txid.length != 64) {
+          renderErrorMessage(preview, "Invalid inscription id");
+          return;
+        }
+
+        showPreview(preview, txid);
+
+        currentlyLoaded = inscriptionId;
+      }
+
+      let inscriptionId = document.getElementById("inscription-id");
+
+      inscriptionId.addEventListener("focusout", () => {
+        loadPreview(inscriptionId.value);
+      });
+
+      inscriptionId.addEventListener("keydown", (e) => {
+        if (e.code.toUpperCase() == "ENTER") {
+          loadPreview(inscriptionId.value);
+        }
+      });
+    </script>
+  </body>
+</html>

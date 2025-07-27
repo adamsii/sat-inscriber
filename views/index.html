@@ -1,0 +1,399 @@
+<html>
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BS39D1T9MN"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-BS39D1T9MN");
+    </script>
+    <title>Sat Inscriber</title>
+    <meta
+      name="description"
+      lang="en-US"
+      content="Participate in the newest NFT market on Bitcoin and inscribe your files with us today!"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png?v1"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png?v1"
+    />
+    <link rel="stylesheet" href="./css/stylesheet.css" />
+    <link rel="stylesheet" href="./css/modal.css" />
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+  <body class="body">
+    <nav class="nav">
+      <a href="/" class="logo">Sat Inscriber</a>
+      <span class="nav-links">
+        <a href="/inscription-viewer.html">Inscription viewer</a>
+        <a href="/my-inscriptions.html">My inscriptions</a>
+      </span>
+    </nav>
+    <div class="content">
+      <div>
+        <div class="orange-panel">
+          <div class="tagline">
+            <img class="tagline-img" src="./bitcoin-symbol.svg" />
+            <h1 class="tagline-text">Welcome to the future of NFTs</h1>
+          </div>
+          <p class="desc">
+            The only tool you'll need to participate in the newest market of the
+            NFT economy.
+          </p>
+        </div>
+
+        <div class="upload-section">
+          <div class="upload-description">
+            <h1 class="upload-title">Upload your file</h1>
+            <p class="upload-details">Supported filetypes: txt, png, jpeg</p>
+            <p id="file-error" class="error hidden"></p>
+          </div>
+
+          <span class="upload-button-section">
+            <input
+              class="hidden"
+              id="inscription-content"
+              type="file"
+              accept=".txt,.png,.jpg,.jpeg"
+            />
+            <label class="upload-button" for="inscription-content">
+              Upload
+            </label>
+            <p id="file-name"></p>
+          </span>
+        </div>
+
+        <div class="fee-panel">
+          <p class="fee-panel-title">Total with fee</p>
+          <p class="fee-panel-subtitle">Service fee: 4000 sats (~ $1.00)</p>
+          <p id="fee-error" class="error hidden"></p>
+
+          <div class="fee-options">
+            <input
+              name="feerate-selection"
+              id="slow-fee-radio"
+              class="hidden"
+              type="radio"
+            />
+            <label for="slow-fee-radio" class="fee-option">
+              <span class="top">
+                <p class="fee-option-title">Slow</p>
+                <p id="slow-feerate" class="fee-option-text">- sats/vByte</p>
+              </span>
+              <p class="estimated-price" id="slow-estimated-price">-</p>
+            </label>
+
+            <input
+              name="feerate-selection"
+              id="medium-fee-radio"
+              class="hidden"
+              type="radio"
+            />
+            <label for="medium-fee-radio" class="fee-option">
+              <span class="top">
+                <p class="fee-option-title">Medium</p>
+                <p id="medium-feerate" class="fee-option-text">- sats/vByte</p>
+              </span>
+              <p class="estimated-price" id="medium-estimated-price">-</p>
+            </label>
+
+            <input
+              name="feerate-selection"
+              id="fast-fee-radio"
+              class="hidden"
+              type="radio"
+            />
+            <label for="fast-fee-radio" class="fee-option">
+              <span class="top">
+                <p class="fee-option-title">Fast</p>
+                <p id="fast-feerate" class="fee-option-text">- sats/vByte</p>
+              </span>
+              <p class="estimated-price" id="fast-estimated-price">-</p>
+            </label>
+          </div>
+
+          <input
+              name="feerate-selection"
+              id="custom-fee-radio"
+              class="hidden"
+              type="radio"
+            />
+            <label for="custom-fee-radio" class="fee-option">
+              <span class="top">
+                <p class="fee-option-title">Custom</p>
+                <input id="custom-feerate-entry" type="number" placeholder="        "/>
+                <p id="custom-feerate" class="fee-option-text">sats/vByte</p>
+              </span>
+              <p class="estimated-price" id="custom-estimated-price">-</p>
+            </label>
+          </div>
+        </div>
+
+        <div class="address-entry">
+          <h1 class="destination-address-label">Destination Address</h1>
+          <input
+            id="destination-address"
+            placeholder="Destination Address"
+            type="text"
+          />
+        </div>
+        <p id="address-error" class="error hidden"></p>
+
+        <button onclick="postInscription(event)" id="inscribe-button">
+          Inscribe
+        </button>
+      </div>
+    </div>
+    <script src="./js/address-validation.js"></script>
+    <script src="./qrcode.min.js"></script>
+    <script type="text/javascript" src="./utils.js"></script>
+    <script type="text/javascript" src="./modal-actions.js"></script>
+    <script type="text/javascript" src="./index.js"></script>
+    <script>
+      let global = {};
+
+      function base64ByteLength(base64String) {
+        //Get only data portion
+        base64String = base64String.split(",")[1];
+        let y = base64String.endsWith("==") ? 2 : 1;
+
+        // https://softwareengineering.stackexchange.com/a/368406/361782
+        return base64String.length * (3 / 4) - y;
+      }
+
+      let customFeerate = document.getElementById("custom-feerate-entry");
+      customFeerate.addEventListener("keydown", async () => {
+        let fileBase64 = await getFileBase64();
+
+        if(!fileBase64 || !global.lastSatoshiPrice){
+          return;
+        }
+
+        populateFeeEstimates(fileBase64, global.lastSatoshiPrice)
+      })
+
+      function populateFeeEstimates(fileBase64, satoshiPrice) {
+        const SERVICE_FEE = 4_000;
+        const TARGET_POSTAGE = 10_000;
+        const COMMIT_VIRTUAL_SIZE = 154;
+        let revealVirtualSize = getRevealVirtualSize(
+          base64ByteLength(fileBase64)
+        );
+
+        let sizeTotal = COMMIT_VIRTUAL_SIZE + revealVirtualSize;
+
+        for (let feerateSelection of document.getElementsByName(
+          "feerate-selection"
+        )) {
+          let estimatedPriceElement =
+            feerateSelection.nextElementSibling.getElementsByClassName(
+              "estimated-price"
+            )[0];
+
+          if(feerateSelection.id == "custom-fee-radio"){
+            let customFeerate = document.getElementById("custom-feerate-entry").value;
+
+            if(!customFeerate){
+              return;
+            }
+
+            feerateSelection.value = parseInt(customFeerate);
+          }
+
+          let feeForVSize = feerateSelection.value * sizeTotal;
+
+          let estimatedPriceInDollars = (
+            (TARGET_POSTAGE + feeForVSize + SERVICE_FEE) *
+            satoshiPrice
+          ).toFixed(2);
+
+          estimatedPriceElement.innerHTML = `$${estimatedPriceInDollars}`;
+        }
+
+        
+      }
+
+      document
+        .getElementById("inscription-content")
+        .addEventListener("change", async () => {
+          try {
+            let fileSize = getFileSize();
+
+            if (fileSize >= 400_000) {
+              setFileError("File must be smaller than 400KB");
+              return;
+            }
+
+            let fileBase64 = await getFileBase64();
+
+            if (!fileBase64) {
+              setFileError("File must not be empty");
+              return;
+            }
+
+            let bitcoinPrice = await getPrice();
+            let satoshiPrice = bitcoinPrice / 100_000_000;
+            global.lastSatoshiPrice = satoshiPrice;
+            populateFeeEstimates(fileBase64, satoshiPrice);
+          } catch (e) {
+            setFileError(e.message);
+          }
+        });
+
+      let inscriptionButtonLocked = false;
+      async function postInscription(event) {
+        if (inscriptionButtonLocked) {
+          return;
+        }
+
+        event.target.classList.add("locked");
+
+        inscriptionButtonLocked = true;
+
+        try {
+          setFileError("");
+          setFeeError("");
+          setAddressError("");
+
+          let inscriptionBase64 = await getFileBase64();
+
+          if (!inscriptionBase64) {
+            setFileError("File must not be empty");
+            return;
+          }
+
+          let inscriptionContentType = getInscriptionType();
+
+          if (!inscriptionContentType) {
+            setFileError("The extension could not be determined");
+            return;
+          }
+
+          let destinationAddress = getDestinationAddress();
+
+          if (!destinationAddress) {
+            setAddressError("Please set a destination address");
+            return;
+          }
+
+          try {
+            let addressInfo = AddressValidation.getAddressInfo(destinationAddress?.trim());
+            if(addressInfo.type.toLowerCase() != "p2tr"){
+              setAddressError("Support is currently limited to P2TR addresses");
+              return;
+            }
+          }
+          catch(e){
+            setAddressError("Invalid address");
+            return;
+          }
+
+          let feerate = getFeerateSelection();
+
+          if (!feerate) {
+            setFeeError("A feerate must be selected");
+            return;
+          }
+
+          let sub = getSub();
+          if (!sub) {
+            throw new Error(
+              "An unexpected error has occured. Please contact support"
+            );
+          }
+
+          let response = await fetch("/mint", {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify({
+              sub,
+              destinationAddress,
+              inscriptionBase64,
+              inscriptionContentType,
+              feerate,
+            }),
+          });
+
+          let mintResponse = await response.json();
+          openModal(mintResponse);
+        } catch (e) {
+          console.log(e);
+        }
+        finally {
+          inscriptionButtonLocked = false;
+          event.target.classList.remove("locked");
+        }
+      }
+
+      async function getFeerates() {
+        let response = await fetch("/fee");
+        let feerates = await response.json();
+
+        setFee("slow", feerates[6].toFixed(2));
+        setFee("medium", feerates[3].toFixed(2));
+        setFee("fast", feerates[1].toFixed(2));
+      }
+
+      //https://stackoverflow.com/a/2117523/7407434
+      function uuidv4() {
+        return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+          (
+            c ^
+            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+          ).toString(16)
+        );
+      }
+
+      function getSub() {
+        let sub = localStorage.getItem("sub");
+        if (!sub) {
+          sub = uuidv4();
+          localStorage.setItem("sub", sub);
+        }
+
+        return sub;
+      }
+
+      getFeerates();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,268 @@
+<html>
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BS39D1T9MN"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-BS39D1T9MN");
+    </script>
+    <title>Sat Inscriber</title>
+    <meta
+      name="description"
+      lang="en-US"
+      content="Participate in the newest NFT market on Bitcoin and inscribe your files with us today!"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png?v1"
+    />
+    <link rel="stylesheet" href="/css/stylesheet.css" />
+    <link rel="stylesheet" href="/css/modal.css" />
+    <link rel="stylesheet" href="/css/mint-details.css" />
+  </head>
+  <body class="body">
+    <div id="notifications"></div>
+    <nav class="nav">
+      <a href="/" class="logo">Sat Inscriber</a>
+      <span class="nav-links">
+        <a href="/inscription-viewer.html">Inscription viewer</a>
+        <a href="/my-inscriptions.html">My inscriptions</a>
+      </span>
+    </nav>
+    <div class="content">
+      <div class="header">
+        <h1 id="mint-id"></h1>
+
+        <p id="mint-date"></p>
+        <button
+          id="open-invoice"
+          class="hidden square-button fill-button-inverse"
+        >
+          Complete invoice
+        </button>
+      </div>
+      <div>
+        <div style="margin-left: auto; margin-right: auto">
+          <div style="display: flex; gap: 20px">
+            <h1 class="detail-section-title selected">Mint Details</h1>
+            <!-- <h1 class="detail-section-title">Tx Details</h1> -->
+            <a
+              id="ordinal-explorer-link"
+              target="_blank"
+              class="hidden link"
+              href=""
+              ><h1 class="detail-section-title">Ordinal Explorer</h1></a
+            >
+          </div>
+
+          <div id="data-container"></div>
+        </div>
+      </div>
+    </div>
+    <script src="/qrcode.min.js"></script>
+    <script src="/modal-actions.js"></script>
+    <script type="text/javascript" src="/mint-details.js"></script>
+    <script>
+      let detailRows = [
+        {
+          label: "Status",
+          response_property: "fundingStatus",
+          render: (val, mintInfo) => {
+            switch (val) {
+              case FundingStatus.PENDING:
+                return "Waiting for payment";
+              case FundingStatus.UNCONFIRMED:
+                return "Waiting for 2 confimations";
+              //Skipping this case for now
+              case FundingStatus.ONE_CONFIRMATION:
+                return "Waiting for 2 confirmations (1/2)";
+              case FundingStatus.INCOMPLETE:
+                return `Incomplete payment - ${mintInfo.amountPaid} of ${mintInfo.amount} sats paid (fee adjusted)`;
+              case FundingStatus.COMPLETED:
+                return "Funded";
+            }
+          },
+        },
+        {
+          label: "Inscription Id",
+          response_property: "revealTxId",
+          render: (val) => {
+            return `${val}i0`;
+          },
+          copyEnabled: true,
+        },
+        {
+          label: "Mint Request Id",
+          response_property: "mintId",
+        },
+        {
+          label: "Content Type",
+          response_property: "contentType",
+        },
+        {
+          label: "Submitted On",
+          response_property: "createdAt",
+          render: (val) => {
+            return new Date(val).toLocaleDateString();
+          },
+        },
+        {
+          label: "Funding Address",
+          response_property: "fundingAddress",
+          render: (fundingAddress) => {
+            return `<a target="_blank" class="link" href="/bitcoin-explorer/address/${fundingAddress}">${fundingAddress}</a>`;
+          },
+        },
+        {
+          label: "Amount",
+          response_property: "amount",
+          render: (val) => {
+            return `${val} sats`;
+          },
+        },
+        {
+          label: "Feerate",
+          response_property: "feerate",
+          render: (val) => {
+            return `${val} sats/vByte`;
+          },
+        },
+        {
+          label: "Commit Transaction Id",
+          response_property: "commitTxId",
+          render: (val) => {
+            return `<a target="_blank" class="link" href="/bitcoin-explorer/tx/${val}">${val}</a>`;
+          },
+        },
+        {
+          label: "Reveal Transaction Id",
+          response_property: "revealTxId",
+          render: (val) => {
+            return `<a target="_blank" class="link" href="/bitcoin-explorer/tx/${val}">${val}</a>`;
+          },
+        },
+      ];
+
+      function nullOrUndefined(value) {
+        return value == null || value == undefined;
+      }
+
+      function copyToClipboard(value) {
+        navigator.clipboard.writeText(value);
+
+        let notifications = document.getElementById("notifications");
+
+        let interval = 3000;
+
+        let message =
+          document.getElementById("notification-message") ||
+          document.createElement("div");
+
+        message.innerHTML = `Copied ${value}`;
+        message.id = "notification-message";
+        message.classList.add("notification");
+        message.classList.add(`fade-out-${interval}`);
+
+        notifications.insertAdjacentElement("afterbegin", message);
+      }
+
+      let mintInfo;
+
+      async function loadDetails(mintId) {
+        try {
+          let sub = localStorage.getItem("sub");
+          let response = await fetch(`/mint/sub/${sub}/${mintId}`);
+          mintInfo = await response.json();
+
+          setDomValue("mint-id", mintInfo.mintId);
+          setDomValue(
+            "mint-date",
+            new Date(mintInfo.createdAt).toLocaleDateString()
+          );
+
+          if (
+            mintInfo.fundingStatus == FundingStatus.PENDING ||
+            mintInfo.fundingStatus == FundingStatus.INCOMPLETE
+          ) {
+            document.getElementById("open-invoice").classList.remove("hidden");
+          }
+
+          if (mintInfo.fundingStatus == FundingStatus.COMPLETED) {
+            document
+              .getElementById("ordinal-explorer-link")
+              .classList.remove("hidden");
+
+            document.getElementById(
+              "ordinal-explorer-link"
+            ).href = `/ordinal-explorer/inscription/${mintInfo.revealTxId}i0`;
+          }
+
+          let dataContainer = document.getElementById("data-container");
+
+          detailRows.forEach((r) => {
+            let renderedValue = r.render
+              ? r.render(mintInfo[r.response_property], mintInfo)
+              : mintInfo[r.response_property];
+
+            dataContainer.insertAdjacentHTML(
+              "beforeend",
+              nullOrUndefined(mintInfo[r.response_property])
+                ? ""
+                : `
+              <div class="data-row">
+                <p class="data-label">${r.label}</p>
+                <div style="display: flex">
+                  <p class="data-value">${renderedValue}</p>
+                  ${
+                    r.copyEnabled
+                      ? `<img class="copy-to-clipboard" src="/content-copy.svg" onclick="copyToClipboard('${renderedValue}')" />`
+                      : ""
+                  }
+                </div>
+              </div>
+            `
+            );
+          });
+        } catch (e) {
+          if (mintInfo.status == 404) {
+            console.log(`mint not found for sub ${sub}`);
+          }
+          console.log(e);
+        }
+
+        return mintInfo;
+      }
+
+      let pathname = new URL(location).pathname;
+      let pathComponents = pathname.split("/");
+      let mintId = pathComponents[pathComponents.length - 2];
+
+      loadDetails(mintId);
+
+      document.getElementById("open-invoice")?.addEventListener("click", () => {
+        openModal(mintInfo);
+      });
+    </script>
+  </body>
+</html>

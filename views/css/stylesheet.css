@@ -1,0 +1,130 @@
+:root {
+  --main-color: #f7931a;
+  --error-color: rgb(207, 32, 47);
+  --nav-height: 80px;
+  --link: #4169e1;
+}
+
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  font: 400 18px/1.7 "Inter var", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: initial;
+}
+
+.title {
+  margin: 0px;
+}
+
+.link {
+  color: var(--link);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.nav {
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  padding: 0px 80px;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 24px;
+  margin-right: 5%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 45%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 20px;
+  padding-bottom: 100px;
+}
+
+.button {
+  outline: none;
+  border: none;
+  background-color: var(--main-color);
+  border-radius: 35px;
+  height: 50px;
+  width: 100%;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button:hover {
+  opacity: 0.8;
+  color: white;
+}
+
+.square-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+  opacity: 0.9;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.fill-button-inverse {
+  background-color: white;
+  color: var(--main-color);
+  border: 1px solid var(--main-color);
+}
+
+.fill-button-inverse:hover {
+  background-color: var(--main-color);
+  color: white;
+}
+
+.nav-links {
+  margin-left: auto;
+  display: flex;
+  gap: 10%;
+}
+
+.nav-links a {
+  white-space: nowrap;
+}
+
+.copy-to-clipboard {
+  width: 25px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 800px) {
+  .content {
+    width: 90%;
+  }
+
+  .nav {
+    padding: 0px 5%;
+  }
+}

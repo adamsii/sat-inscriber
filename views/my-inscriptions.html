@@ -1,0 +1,130 @@
+<html>
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BS39D1T9MN"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-BS39D1T9MN");
+    </script>
+    <title>Sat Inscriber</title>
+    <meta
+      name="description"
+      lang="en-US"
+      content="Participate in the newest NFT market on Bitcoin and inscribe your files with us today!"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png?v1"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png?v1"
+    />
+    <link rel="stylesheet" href="./css/stylesheet.css" />
+    <link rel="stylesheet" href="./css/my-inscriptions.css" />
+  </head>
+  <body class="body">
+    <nav class="nav">
+      <a href="/" class="logo">Sat Inscriber</a>
+      <span class="nav-links">
+        <a href="/inscription-viewer.html">Inscription viewer</a>
+        <a href="/my-inscriptions.html">My inscriptions</a>
+      </span>
+    </nav>
+    <div id="modal" class="modal hidden">
+      <h1 class="modal-title">Your mint request has been submitted</h1>
+      <p class="modal-text">
+        Please pay the invoice below to fund your inscription
+      </p>
+
+      <p class="modal-subtext">
+        To view this invoice later, visit 'My mints' from the homepage
+      </p>
+
+      <div id="invoice-ctn">
+        <div id="invoice"></div>
+      </div>
+
+      <div>
+        <p class="payment-title">Payment Address</p>
+        <p id="payment-address" class="payment-text"></p>
+      </div>
+      <div>
+        <p class="payment-title">Payment Amount</p>
+        <p id="payment-amount" class="payment-text"></p>
+      </div>
+
+      <div id="payment-status" class="payment-status pending-payment-status">
+        <div id="dot"></div>
+        <p id="payment-status-message">Waiting for payment</p>
+      </div>
+    </div>
+    <div class="content">
+      <h1 class="title">My Inscriptions</h1>
+      <ul id="mint-list" style="width: 100%; padding: 0px"></ul>
+    </div>
+    <script src="./qrcode.min.js"></script>
+    <script type="text/javascript" src="./utils.js"></script>
+    <script type="text/javascript" src="./modal-actions.js"></script>
+    <script>
+      async function populate() {
+        let sub = localStorage.getItem("sub");
+        let response = await fetch(`/mint/sub/${sub}`);
+        let mints = await response.json();
+
+        if (!mints) {
+          console.log(`Unable to retrieve mints for sub ${sub}`);
+          return;
+        }
+
+        let mintListContainerElement = document.getElementById("mint-list");
+
+        if (!mints?.length) {
+          mintListContainerElement.innerHTML = "No inscriptions found";
+          return;
+        }
+
+        mints.reverse().forEach((m) => {
+          mintListContainerElement.insertAdjacentHTML(
+            "beforeend",
+            `
+            <a href="/mint/${m.mintId}/details">
+              <li class="list-item">
+                <div style="width: max-content">
+                    <p class="mint-id">
+                      ${m.fundingStatus != "COMPLETED" ? "*" : ""}
+                      ${m.mintId}
+                    </p>
+                  <p class="date">${new Date(
+                    m.createdAt
+                  ).toLocaleDateString()}</p>
+                </div>
+                <button class="details-link">Details</button>
+              </li>
+            </a>
+          `
+          );
+        });
+      }
+
+      populate();
+    </script>
+  </body>
+</html>

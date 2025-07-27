@@ -1,0 +1,44 @@
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 20px;
+  box-sizing: border-box;
+  box-shadow: rgb(0 0 0 / 30%) 0px 0px 8px;
+  padding: 20px;
+  position: relative;
+}
+
+#mint-list {
+  width: 100%;
+  padding: 0px;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+}
+
+.mint-id {
+  margin: 0px;
+  /* width: 50%; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: black;
+}
+
+.date {
+  margin: 0px;
+  opacity: 0.5;
+  font-size: 12px;
+}
+
+.details-link {
+  border: none;
+  font-size: 15px;
+  color: white;
+  background-color: var(--main-color);
+  border-radius: 25px;
+  padding: 10px;
+  width: 80px;
+  cursor: pointer;
+}
